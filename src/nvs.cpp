@@ -32,9 +32,9 @@ bool nvsFile::mount(bool formatOnFail) {
         }
     }
     if (isMounted()) {
-        theLog.output(subSystems::filesystem, loggingLevel::Info, "FileSystem Mounted");
+        theLog.output(subSystem::filesystem, loggingLevel::Info, "FileSystem Mounted");
     } else {
-        theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not mount FileSystem");
+        theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not mount FileSystem");
     }
     return isFilesystemMounted;
 }
@@ -55,10 +55,10 @@ bool nvsFile::format() {
     // this might create endless reboot sequence
     bool success{false};
     if (fileSystemType.format()) {
-        theLog.output(subSystems::filesystem, loggingLevel::Info, "FileSystem formatted");
+        theLog.output(subSystem::filesystem, loggingLevel::Info, "FileSystem formatted");
         success = true;
     } else {
-        theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not format FileSystem");
+        theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not format FileSystem");
     }
     return success;
 }
@@ -72,15 +72,15 @@ int32_t nvsFile::size() const {
                 theFile.close();
                 return theFilesize;
             } else {
-                theLog.snprintf(subSystems::filesystem, loggingLevel::Error, "Could not open file %s", filename);
+                theLog.snprintf(subSystem::filesystem, loggingLevel::Error, "Could not open file %s", filename);
                 return -1;
             }
         } else {
-            theLog.snprintf(subSystems::filesystem, loggingLevel::Error, "File %s does not exist", filename);
+            theLog.snprintf(subSystem::filesystem, loggingLevel::Error, "File %s does not exist", filename);
             return -1;
         }
     } else {
-        theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not mount FS");
+        theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not mount FS");
         return -1;
     }
 }
@@ -89,18 +89,18 @@ bool nvsFile::erase() const {
     if (fileSystemType.begin(true)) {
         if (fileSystemType.exists(filename)) {
             if (fileSystemType.remove(filename)) {
-                theLog.snprintf(subSystems::filesystem, loggingLevel::Debug, "Erased file %s", filename);
+                theLog.snprintf(subSystem::filesystem, loggingLevel::Debug, "Erased file %s", filename);
                 return true;
             } else {
-                theLog.snprintf(subSystems::filesystem, loggingLevel::Error, "File %s exists but could not erase it", filename);
+                theLog.snprintf(subSystem::filesystem, loggingLevel::Error, "File %s exists but could not erase it", filename);
                 return false;
             }
         } else {
-            theLog.snprintf(subSystems::filesystem, loggingLevel::Error, "File %s does not exist, cannot erase it", filename);
+            theLog.snprintf(subSystem::filesystem, loggingLevel::Error, "File %s does not exist, cannot erase it", filename);
             return true;        // result is as good as if we deleted the file, so we return 'true'
         }
     } else {
-        theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not mount FS");
+        theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not mount FS");
         return false;
     }
 }
@@ -109,9 +109,9 @@ bool nvsFile::save(const char* theContent) const {
     if (fileSystemType.begin(true)) {
         if (fileSystemType.exists(filename)) {            // if the file already exist
             if (fileSystemType.remove(filename)) {        // delete the old file first, otherwise writing to it will append..
-                theLog.output(subSystems::filesystem, loggingLevel::Debug, "Removed existing file");
+                theLog.output(subSystem::filesystem, loggingLevel::Debug, "Removed existing file");
             } else {
-                theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not delete existing file");
+                theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not delete existing file");
                 return false;
             }
         }
@@ -119,15 +119,15 @@ bool nvsFile::save(const char* theContent) const {
         File newFile = fileSystemType.open(filename, FILE_WRITE);
         if (newFile) {
             newFile.print(theContent);
-            theLog.snprintf(subSystems::filesystem, loggingLevel::Debug, "%s saved", filename);
+            theLog.snprintf(subSystem::filesystem, loggingLevel::Debug, "%s saved", filename);
             newFile.close();
             return true;
         } else {
-            theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not create file");
+            theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not create file");
             return false;
         }
     } else {
-        theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not mount FS");
+        theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not mount FS");
         return false;
     }
 }
@@ -139,7 +139,7 @@ bool nvsFile::read(char* theContent, uint32_t maxContentLength) const {
             if (theFile) {
                 int32_t bytesToRead = theFile.size();
                 if (bytesToRead > maxContentLength) {
-                    theLog.snprintf(subSystems::filesystem, loggingLevel::Warning, "Filesize = %d > buffersize = %d", bytesToRead, maxContentLength);
+                    theLog.snprintf(subSystem::filesystem, loggingLevel::Warning, "Filesize = %d > buffersize = %d", bytesToRead, maxContentLength);
                     bytesToRead = maxContentLength;
                 }
                 theFile.read((uint8_t*)theContent, bytesToRead);
@@ -147,15 +147,15 @@ bool nvsFile::read(char* theContent, uint32_t maxContentLength) const {
                 theFile.close();
                 return true;
             } else {
-                theLog.snprintf(subSystems::filesystem, loggingLevel::Error, "Cannot open file %s", filename);
+                theLog.snprintf(subSystem::filesystem, loggingLevel::Error, "Cannot open file %s", filename);
                 return false;
             }
         } else {
-            theLog.snprintf(subSystems::filesystem, loggingLevel::Error, "File %s not found", filename);
+            theLog.snprintf(subSystem::filesystem, loggingLevel::Error, "File %s not found", filename);
             return false;
         }
     } else {
-        theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not mount FS");
+        theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not mount FS");
         return false;
     }
 }
@@ -163,23 +163,23 @@ bool nvsFile::read(char* theContent, uint32_t maxContentLength) const {
 void nvsFile::dump() const {
     char tmpString[513];
     read(tmpString, 512);
-    theLog.output(subSystems::filesystem, loggingLevel::Debug, tmpString);
+    theLog.output(subSystem::filesystem, loggingLevel::Debug, tmpString);
 }
 
 void nvsFile::list() {
     if (isMounted()) {
-        theLog.output(subSystems::filesystem, loggingLevel::Info, "----- File listing --------------------");
+        theLog.output(subSystem::filesystem, loggingLevel::Info, "----- File listing --------------------");
         int fileIndex{0};
         File root = fileSystemType.open("/");
         root.rewindDirectory();
         File tmpFile = root.openNextFile();
 
         while (tmpFile) {
-            theLog.snprintf(subSystems::filesystem, loggingLevel::Info, "file[%d] [%s] [%d] bytes", fileIndex, tmpFile.name(), tmpFile.size());
+            theLog.snprintf(subSystem::filesystem, loggingLevel::Info, "file[%d] [%s] [%d] bytes", fileIndex, tmpFile.name(), tmpFile.size());
             tmpFile = root.openNextFile();
             fileIndex++;
         }
-        theLog.output(subSystems::filesystem, loggingLevel::Info, "---------------------------------------");
+        theLog.output(subSystem::filesystem, loggingLevel::Info, "---------------------------------------");
     }
 }
 
@@ -191,7 +191,7 @@ bool nvsFile::exists(const char* aFilename) {
             return false;
         }
     } else {
-        theLog.output(subSystems::filesystem, loggingLevel::Error, "Could not mount FS");
+        theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not mount FS");
         return false;
     }
 }

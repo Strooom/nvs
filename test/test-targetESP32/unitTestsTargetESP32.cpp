@@ -1,5 +1,6 @@
 #define UnitTesting
 
+#include <string.h>
 #include <unity.h>
 #include "nvs.h"
 #include "logging.h"
