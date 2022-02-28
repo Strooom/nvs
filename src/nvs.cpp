@@ -168,7 +168,7 @@ void nvsFile::dump() const {
 
 void nvsFile::list() {
     if (isMounted()) {
-        theLog.output(subSystem::filesystem, loggingLevel::Info, "File listing:");
+        theLog.output(subSystem::filesystem, loggingLevel::Info, "file listing:");
         int fileIndex{0};
         File root = fileSystemType.open("/");
         root.rewindDirectory();
