@@ -15,8 +15,15 @@ extern uLog theLog;
 
 bool nvsFile::isFilesystemMounted = false;        // initialize it here because it is a static member
 
+nvsFile::nvsFile() {
+}
+
 nvsFile::nvsFile(const char* theFilename) {
     strlcpy(filename, theFilename, maxFilenameLength);
+}
+
+void nvsFile::setFilename(const char* newFilename) {
+    strlcpy(filename, newFilename, maxFilenameLength);
 }
 
 bool nvsFile::mount(bool formatOnFail) {

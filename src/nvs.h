@@ -3,7 +3,9 @@
 
 class nvsFile {
   public:
-    nvsFile(const char *filename);                                 // constructor
+    nvsFile();                                                     // constructor without setting a filename
+    nvsFile(const char *filename);                                 // constructor with immediately setting a filename
+    void setFilename(const char *filename);                        // 
     static constexpr int maxFilenameLength{32};                    //
     static bool mount(bool formatOnFail = false);                  // mount the fileSystem
     static bool unMount();                                         // unMount the fileSystem
