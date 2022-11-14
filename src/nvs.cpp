@@ -201,3 +201,23 @@ bool nvsFile::exists(const char* aFilename) {
         return false;
     }
 }
+
+bool nvsFile::erase(const char *aFilename){
+    if (fileSystemType.begin(true)) {
+        if (fileSystemType.exists(aFilename)) {
+            if (fileSystemType.remove(aFilename)) {
+                theLog.snprintf(subSystem::filesystem, loggingLevel::Debug, "Erased file %s", aFilename);
+                return true;
+            } else {
+                theLog.snprintf(subSystem::filesystem, loggingLevel::Error, "File %s exists but could not erase it", aFilename);
+                return false;
+            }
+        } else {
+            theLog.snprintf(subSystem::filesystem, loggingLevel::Error, "File %s does not exist, cannot erase it", aFilename);
+            return true;        // result is as good as if we deleted the file, so we return 'true'
+        }
+    } else {
+        theLog.output(subSystem::filesystem, loggingLevel::Error, "Could not mount FS");
+        return false;
+    }
+}

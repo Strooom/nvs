@@ -5,7 +5,7 @@ class nvsFile {
   public:
     nvsFile();                                                     // constructor without setting a filename
     nvsFile(const char *filename);                                 // constructor with immediately setting a filename
-    void setFilename(const char *filename);                        // 
+    void setFilename(const char *filename);                        //
     static constexpr int maxFilenameLength{32};                    //
     static bool mount(bool formatOnFail = false);                  // mount the fileSystem
     static bool unMount();                                         // unMount the fileSystem
@@ -13,6 +13,7 @@ class nvsFile {
     static bool format();                                          // format the fileSystem
     static void list();                                            // list all present files to the logging
     static bool exists(const char *aFilename);                     //
+    static bool erase(const char *aFilename);                      //
     int32_t size() const;                                          //
     bool erase() const;                                            // deletes the file - not calling it delete() because this is a reserved keyword in C++
     bool read(char *content, uint32_t contentLength) const;        //
